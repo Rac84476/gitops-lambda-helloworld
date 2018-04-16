@@ -25,11 +25,13 @@ pipeline {
     stage("Test") {
       steps {
         sh "lwc LambdaFunction.lw"
-        def cmdStatusCode = sh(script: "fugue status HelloWorldLambda", returnStatus: true)
-        if(cmdStatusCode == 0) {
-          sh(script: "fugue update HelloWorldLambda LambdaFunction.lw -y --dry-run")
-        } else {
-          sh(script: "fugue run LambdaFunction.lw -a HelloWorldLambda --dry-run")
+        script {
+          def cmdStatusCode = sh(script: "fugue status HelloWorldLambda", returnStatus: true)
+          if(cmdStatusCode == 0) {
+            sh(script: "fugue update HelloWorldLambda LambdaFunction.lw -y --dry-run")
+          } else {
+            sh(script: "fugue run LambdaFunction.lw -a HelloWorldLambda --dry-run")
+          }
         }
       }
     }
@@ -38,11 +40,13 @@ pipeline {
         branch "master"
       }
       steps {
-        def cmdStatusCode = sh(script: "fugue status HelloWorldLambda", returnStatus: true)
-        if(cmdStatusCode == 0) {
-          sh(script: "fugue update HelloWorldLambda LambdaFunction.lw -y")
-        } else {
-          sh(script: "fugue run LambdaFunction.lw -a HelloWorldLambda")
+        script {
+          def cmdStatusCode = sh(script: "fugue status HelloWorldLambda", returnStatus: true)
+          if(cmdStatusCode == 0) {
+            sh(script: "fugue update HelloWorldLambda LambdaFunction.lw -y")
+          } else {
+            sh(script: "fugue run LambdaFunction.lw -a HelloWorldLambda")
+          }
         }
       }
     }
