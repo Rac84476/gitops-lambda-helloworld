@@ -18,26 +18,32 @@ pipeline {
   }
   stages {
     stage("Build") {
-      sh(script: "zip -r lambda_function.zip lambda_function.py")
+      steps {
+        sh(script: "zip -r lambda_function.zip lambda_function.py")
+      }
     }
     stage("Test") {
-      sh "lwc LambdaFunction.lw"
-      def cmdStatusCode = sh(script: "fugue status HelloWorldLambda", returnStatus: true)
-      if(cmdStatusCode == 0) {
-        sh(script: "fugue update HelloWorldLambda LambdaFunction.lw -y --dry-run")
-      } else {
-        sh(script: "fugue run LambdaFunction.lw -a HelloWorldLambda --dry-run")
+      steps {
+        sh "lwc LambdaFunction.lw"
+        def cmdStatusCode = sh(script: "fugue status HelloWorldLambda", returnStatus: true)
+        if(cmdStatusCode == 0) {
+          sh(script: "fugue update HelloWorldLambda LambdaFunction.lw -y --dry-run")
+        } else {
+          sh(script: "fugue run LambdaFunction.lw -a HelloWorldLambda --dry-run")
+        }
       }
     }
     stage("Deploy") {
       when {
         branch "master"
       }
-      def cmdStatusCode = sh(script: "fugue status HelloWorldLambda", returnStatus: true)
-      if(cmdStatusCode == 0) {
-        sh(script: "fugue update HelloWorldLambda LambdaFunction.lw -y")
-      } else {
-        sh(script: "fugue run LambdaFunction.lw -a HelloWorldLambda")
+      steps {
+        def cmdStatusCode = sh(script: "fugue status HelloWorldLambda", returnStatus: true)
+        if(cmdStatusCode == 0) {
+          sh(script: "fugue update HelloWorldLambda LambdaFunction.lw -y")
+        } else {
+          sh(script: "fugue run LambdaFunction.lw -a HelloWorldLambda")
+        }
       }
     }
   }
